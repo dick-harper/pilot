@@ -23,7 +23,22 @@ namespace Pilot.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "cookie";
+                    options.DefaultChallengeScheme = "oidc";
+                })
+                .AddCookie("cookie")
+                .AddOpenIdConnect("oidc", options =>
+                {
+                    options.Authority = "https://localhost:5000/";
+                    options.ClientId = "openIdConnectClient";
+                    options.SignInScheme = "cookie";
+                });
+
             services.AddMvc();
+
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,7 +49,11 @@ namespace Pilot.API
                 app.UseDeveloperExceptionPage();
             }
 
+
+            app.UseAuthentication();
+            app.UseAuthentication();
             app.UseMvc();
+            app.UseStaticFiles();
         }
     }
 }
